@@ -76,7 +76,16 @@ export interface UsersResponse {
   limit: number;
 }
 
-export type SortOption = "none" | "name-asc" | "name-desc" | "username-asc" | "age-asc" | "age-desc" | "company-asc";
+export type SortOption =
+  | "none"
+  | "name-asc"
+  | "name-desc"
+  | "username-asc"
+  | "age-asc"
+  | "age-desc"
+  | "company-asc";
+
+export type ViewMode = "grid" | "list" | "compact";
 
 export interface FilterState {
   searchQuery: string;
@@ -84,4 +93,5 @@ export interface FilterState {
   selectedCity: string;
   selectedCompany: string;
   selectedGender: string;
+  showOnlyFavorites: boolean;
 }

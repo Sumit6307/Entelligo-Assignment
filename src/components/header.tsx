@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, Sparkles, Github } from "lucide-react";
+import { Users, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 

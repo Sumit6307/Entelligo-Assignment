@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import {
   User as UserIcon,
   MapPin,
@@ -15,7 +14,6 @@ import {
   ArrowLeft,
   ChevronRight,
   Home,
-  CheckCircle2,
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { ProfileHero } from "@/components/user-details/profile-hero";

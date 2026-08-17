@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, MapPin, Building2, Briefcase, Copy, Check, Share2, Sparkles } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Building2, Briefcase, Check, Share2, Sparkles, Heart } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,39 @@ interface ProfileHeroProps {
 export function ProfileHero({ user }: ProfileHeroProps) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem("user_directory_favs");
+      if (saved) {
+        const list: number[] = JSON.parse(saved);
+        setIsFavorite(list.includes(user.id));
+      }
+    } catch {
+      // Ignore
+    }
+  }, [user.id]);
+
+  const toggleFavorite = () => {
+    try {
+      const saved = localStorage.getItem("user_directory_favs");
+      let list: number[] = saved ? JSON.parse(saved) : [];
+      if (list.includes(user.id)) {
+        list = list.filter((id) => id !== user.id);
+        setIsFavorite(false);
+      } else {
+        list.push(user.id);
+        setIsFavorite(true);
+      }
+      localStorage.setItem("user_directory_favs", JSON.stringify(list));
+    } catch {
+      // Ignore
+    }
+  };
 
   const fullName = `${user.firstName} ${user.lastName}`;
   const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`;
-  const fullLocation = [user.address?.address, user.address?.city, user.address?.state, user.address?.country || "USA"]
-    .filter(Boolean)
-    .join(", ");
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(user.email);
@@ -29,9 +56,11 @@ export function ProfileHero({ user }: ProfileHeroProps) {
   };
 
   const handleShareProfile = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopiedShare(true);
-    setTimeout(() => setCopiedShare(false), 2000);
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 2000);
+    }
   };
 
   return (
@@ -39,7 +68,7 @@ export function ProfileHero({ user }: ProfileHeroProps) {
       {/* Background Gradient Decorative Glow */}
       <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
-      {/* Back Button Navigation */}
+      {/* Back Button & Header Actions */}
       <div className="mb-6 flex items-center justify-between">
         <Link
           href="/"
@@ -48,15 +77,29 @@ export function ProfileHero({ user }: ProfileHeroProps) {
           <ArrowLeft className="h-4 w-4" /> Back to Users
         </Link>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleShareProfile}
-          className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-        >
-          {copiedShare ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5" />}
-          {copiedShare ? "Link Copied!" : "Share Profile"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleFavorite}
+            className={`gap-1.5 rounded-xl border-border/80 text-xs ${
+              isFavorite ? "border-rose-500/40 text-rose-500 bg-rose-500/10" : ""
+            }`}
+          >
+            <Heart className={`h-4 w-4 ${isFavorite ? "fill-rose-500" : ""}`} />
+            {isFavorite ? "Bookmarked" : "Bookmark"}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShareProfile}
+            className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            {copiedShare ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Share2 className="h-3.5 w-3.5" />}
+            {copiedShare ? "Link Copied!" : "Share"}
+          </Button>
+        </div>
       </div>
 
       {/* Main Profile Info Row */}
